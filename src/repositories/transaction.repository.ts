@@ -1,16 +1,16 @@
-import { CreateTransactionDto } from "../interfaces/transaction.interface";
+import { TransactionDto } from "../interfaces/transaction.interface";
 import db from "../config/db";
 import { walletRepository } from "./wallet.repository";
 import { Wallet } from "../interfaces/wallet.interface";
 import { Knex } from "knex";
 
 export class TransactionRepository {
-  async create(data: CreateTransactionDto) {
+  async create(data: TransactionDto) {
     return db("transactions").insert(data);
   }
 
   async createWithinTrx(
-    transaction: CreateTransactionDto,
+    transaction: TransactionDto,
     trx: Knex.Transaction
   ) {
     return trx("transactions").insert(transaction);
@@ -19,7 +19,7 @@ export class TransactionRepository {
   async transferWithTransaction(
     senderWallet: Wallet,
     receiverWallet: Wallet,
-    transaction: CreateTransactionDto
+    transaction: TransactionDto
   ) {
     // logger.info("Sender Wallet: ", senderWallet);
     // logger.info("Receiver Wallet: ", receiverWallet);
