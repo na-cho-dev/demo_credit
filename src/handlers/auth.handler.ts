@@ -14,6 +14,7 @@ export class AuthHandler {
         "full_name",
         "email",
       ]);
+
       const { full_name, email } = validatedBody;
       if (!full_name || !email) {
         return sendResponse(res, 400, false, {
