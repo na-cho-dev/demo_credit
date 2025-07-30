@@ -6,48 +6,61 @@ import { parse } from "url";
 
 export class WalletHandler {
   async getCurrentUserWallet(req: IncomingMessage, res: ServerResponse) {
-    const user = req.user;
-    if (!user || !user.id)
-      return sendResponse(res, 401, false, {
-        error: "User not authenticated",
-      });
+    try {
+      const user = req.user;
+      if (!user || !user.id)
+        return sendResponse(res, 401, false, {
+          error: "User not authenticated",
+        });
 
-    const wallet = await walletService.getWalletByUserId(String(user.id));
-    return sendResponse(res, 200, true, {
-      message: "Wallet retrieved successfully",
-      data: wallet,
-    });
+      const wallet = await walletService.getWalletByUserId(String(user.id));
+      return sendResponse(res, 200, true, {
+        message: "Wallet retrieved successfully",
+        data: wallet,
+      });
+    } catch (err: any) {
+      return sendResponse(res, 400, false, {
+        error: err.message,
+      });
+    }
+    
   }
 
-  // async getUserWalletById(req: IncomingMessage, res: ServerResponse) {
-  //   const user = req.user;
-  //   if (!user || !user.id)
-  //     return sendResponse(res, 401, false, {
-  //       error: "User not authenticated",
-  //     });
+  async getUserWalletById(req: IncomingMessage, res: ServerResponse) {
+    try {
+      const user = req.user;
+      if (!user || !user.id)
+        return sendResponse(res, 401, false, {
+          error: "User not authenticated",
+        });
 
-  //   const { pathname } = parse(req.url || "", true);
-  //   const routeParams = getRouteParams(
-  //     "/api/wallets/:walletId/balance",
-  //     pathname || ""
-  //   );
-  //   const { walletId } = routeParams;
-  //   if (!walletId)
-  //     return sendResponse(res, 400, false, {
-  //       error: "Wallet ID is required",
-  //     });
+      const { pathname } = parse(req.url || "", true);
+      const routeParams = getRouteParams(
+        "/api/wallets/:walletId/balance",
+        pathname || ""
+      );
+      const { walletId } = routeParams;
+      if (!walletId)
+        return sendResponse(res, 400, false, {
+          error: "Wallet ID is required",
+        });
 
-  //   const wallet = await walletService.getWalletById(walletId);
-  //   if (!wallet)
-  //     return sendResponse(res, 404, false, {
-  //       error: "Wallet not found",
-  //     });
+      const wallet = await walletService.getWalletById(walletId);
+      if (!wallet)
+        return sendResponse(res, 404, false, {
+          error: "Wallet not found",
+        });
 
-  //   return sendResponse(res, 200, true, {
-  //     message: "Wallet retrieved successfully",
-  //     data: wallet,
-  //   });
-  // }
+      return sendResponse(res, 200, true, {
+        message: "Wallet retrieved successfully",
+        data: wallet,
+      });
+    } catch (error: any) {
+      return sendResponse(res, 400, false, {
+        error: error.message,
+      });
+    }
+  }
 }
 
 export const walletHandler = new WalletHandler();

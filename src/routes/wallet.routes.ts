@@ -15,12 +15,13 @@ export const handleWalletRoutes = async (
     return true;
   }
 
-  // if (url === "/api/wallets/:walletId/balance" && method === "GET") {
-  //   await authMiddleware(req, res, () =>
-  //     walletHandler.getUserWalletById(req, res)
-  //   );
-  //   return true;
-  // }
+  const walletBalanceMatch = url?.match(/^\/api\/wallets\/([^/]+)\/balance$/);
+  if (walletBalanceMatch && method === "GET") {
+    await authMiddleware(req, res, () =>
+      walletHandler.getUserWalletById(req, res)
+    );
+    return true;
+  }
 
   return false;
 };

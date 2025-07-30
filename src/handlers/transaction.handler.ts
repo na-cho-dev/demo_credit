@@ -12,7 +12,14 @@ import {
 export class TransactionHandler {
   async fundWallet(req: IncomingMessage, res: ServerResponse) {
     try {
-      const user = req.user!;
+      const userId = String(req.user?.id);
+      const audit = {
+        initiatedBy: userId,
+        ipAddress: Array.isArray(req.headers["x-forwarded-for"])
+          ? req.headers["x-forwarded-for"].join(", ")
+          : req.headers["x-forwarded-for"] || req.socket.remoteAddress,
+        device: req.headers["user-agent"],
+      };
       const body = await parseBody(req);
       const validatedBody = validateBody<FundWalletDto>(body, ["amount"]);
       const { amount } = validatedBody;
@@ -23,10 +30,7 @@ export class TransactionHandler {
         });
       }
 
-      const result = await transactionService.fundWallet(
-        String(user.id),
-        amount
-      );
+      const result = await transactionService.fundWallet(userId, amount, audit);
       return sendResponse(res, 200, true, {
         message: "Wallet funded successfully",
         data: result,
@@ -41,6 +45,13 @@ export class TransactionHandler {
   async withdrawFromWallet(req: IncomingMessage, res: ServerResponse) {
     try {
       const userId = String(req.user?.id);
+      const audit = {
+        initiatedBy: userId,
+        ipAddress: Array.isArray(req.headers["x-forwarded-for"])
+          ? req.headers["x-forwarded-for"].join(", ")
+          : req.headers["x-forwarded-for"] || req.socket.remoteAddress,
+        device: req.headers["user-agent"],
+      };
       const body = await parseBody(req);
       const validatedBody = validateBody<WithdrawFromWalletDto>(body, [
         "amount",
@@ -55,7 +66,8 @@ export class TransactionHandler {
 
       const result = await transactionService.withdrawFromWallet(
         userId,
-        amount
+        amount,
+        audit
       );
       return sendResponse(res, 200, true, {
         message: "Withdrawal successful",
@@ -70,17 +82,28 @@ export class TransactionHandler {
 
   async transfer(req: IncomingMessage, res: ServerResponse) {
     try {
-      const user = req.user!;
+      const userId = String(req.user?.id);
+      const audit = {
+        initiatedBy: userId,
+        ipAddress: Array.isArray(req.headers["x-forwarded-for"])
+          ? req.headers["x-forwarded-for"].join(", ")
+          : req.headers["x-forwarded-for"] || req.socket.remoteAddress,
+        device: req.headers["user-agent"],
+      };
       const body = await parseBody(req);
       const validatedBody = validateBody<TransferToWalletDto>(body, [
         "receiverUserId",
+        "receiverEmail",
         "amount",
       ]);
-      const { receiverUserId, amount } = validatedBody;
+      const { receiverUserId, receiverEmail, amount } = validatedBody;
 
-      if (typeof receiverUserId !== "string" || receiverUserId.trim() === "") {
+      if (
+        (!receiverUserId && !receiverEmail) ||
+        (receiverUserId && receiverEmail)
+      ) {
         return sendResponse(res, 400, false, {
-          error: "receiverUserId must be a valid string",
+          error: "Provide exactly one of receiverUserId or receiverEmail",
         });
       }
 
@@ -90,10 +113,15 @@ export class TransactionHandler {
         });
       }
 
+      const receiverIdentifier = receiverUserId || receiverEmail;
+      const receiverType = receiverUserId ? "id" : "email";
+
       const result = await transactionService.transferToWallet(
-        String(user.id),
-        receiverUserId,
-        amount
+        userId,
+        receiverIdentifier,
+        receiverType,
+        amount,
+        audit
       );
       return sendResponse(res, 200, true, {
         message: "Transfer successful",

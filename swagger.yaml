@@ -1,0 +1,26 @@
+openapi: 3.0.0
+info:
+  title: Demo Credit Wallet API
+  version: 1.0.0
+  description: API documentation for Demo Credit Wallet Service
+servers:
+  - url: http://localhost:3300
+paths:
+  /api/auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        "201":
+          description: User registered successfully
+  # Add other endpoints similarly

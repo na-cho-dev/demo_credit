@@ -17,6 +17,12 @@ export class WalletService {
     if (!wallet) throw new AppError("Wallet not found");
     return wallet;
   }
+
+  async getWalletByEmail(email: string) {
+    const wallet = await walletRepository.findByEmail(email);
+    if (!wallet) throw new AppError("Wallet not found for email");
+    return wallet;
+  }
 }
 
 export const walletService = new WalletService();

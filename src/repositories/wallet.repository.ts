@@ -14,6 +14,14 @@ export class WalletRepository {
     return db("wallets").where({ id: walletId }).first();
   }
 
+  async findByEmail(email: string) {
+    return db("wallets")
+      .join("users", "wallets.user_id", "users.id")
+      .where("users.email", email)
+      .select("wallets.*")
+      .first();
+  }
+
   async updateBalance(walletId: number, newBalance: number) {
     return db("wallets")
       .where({ id: walletId })

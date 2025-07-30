@@ -67,15 +67,16 @@ src/
 
 ## API Endpoints
 
-| Method | Path                      | Description                   | Auth Required |
-|--------|---------------------------|-------------------------------|--------------|
-| POST   | `/api/auth/register`      | Register a new user           | No           |
-| POST   | `/api/auth/login`         | Login user                    | No           |
-| GET    | `/api/users/me`           | Get current user profile      | Yes          |
-| GET    | `/api/wallets/me`         | Get current user's wallet     | Yes          |
-| POST   | `/api/transactions/fund`  | Fund wallet                   | Yes          |
-| POST   | `/api/transactions/withdraw` | Withdraw from wallet        | Yes          |
-| POST   | `/api/transactions/transfer` | Transfer to another wallet  | Yes          |
+| Method | Path                             | Description                   | Auth Required |
+|--------|----------------------------------|-------------------------------|---------------|
+| POST   | `/api/auth/register`             | Register a new user           | No            |
+| POST   | `/api/auth/login`                | Login user                    | No            |
+| GET    | `/api/users/me`                  | Get current user profile      | Yes           |
+| GET    | `/api/wallets/me`                | Get current user's wallet     | Yes           |
+| GET    | `/api/wallets/:walletId/balance` | Get a user's wallet balance   | Yes           |
+| POST   | `/api/transactions/fund`         | Fund wallet                   | Yes           |
+| POST   | `/api/transactions/withdraw`     | Withdraw from wallet          | Yes           |
+| POST   | `/api/transactions/transfer`     | Transfer to another wallet    | Yes           |
 
 **Authentication:**  
 Use the returned `token` as a Bearer token in the `Authorization` header:  
@@ -96,8 +97,8 @@ See [`src/database/migrations/`](src/database/migrations/) for schema definition
 
 ### E-R Diagram
 
-<!-- ![ER Diagram](https://app.dbdesigner.net/designer/schema/123456)  
-*(Replace with your actual diagram URL)* -->
+![ER Diagram](demo-credit_er_diag.png)  
+<!-- <iframe width="100%" height="500px" allowtransparency="true" allowfullscreen="true" scrolling="no" title="Embedded DB Designer IFrame" frameborder="0" src='https://erd.dbdesigner.net/designer/schema/1753697251-demo-credit?embed=true'></iframe> -->
 
 ---
 
@@ -115,7 +116,6 @@ DB_USER=
 DB_PASSWORD=
 DB_NAME=demo_credit_db
 
-ADJUTOR_APP_ID=...
 ADJUTOR_API_KEY=...
 ```
 
@@ -147,6 +147,19 @@ Run tests:
 ```sh
 pnpm test
 ```
+
+---
+
+## Postman Collection
+
+A Postman collection is provided to help you test all API endpoints easily.
+
+- **Download:** [Demo Credit Postman Collection](./Demo_Credit_API_Service.postman_collection.json)
+
+**How to use:**
+1. Import the collection into Postman.
+2. Set up environment variables if needed (e.g., base URL, token).
+3. Use the provided requests to test registration, login, wallet, and transaction endpoints.
 
 ---
 

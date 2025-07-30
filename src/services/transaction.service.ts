@@ -2,11 +2,18 @@ import { AppError, NotFoundError } from "../errors/AppError";
 import { walletService } from "./wallet.service";
 import { transactionRepository } from "../repositories/transaction.repository";
 import { walletRepository } from "../repositories/wallet.repository";
-import { CreateTransactionDto } from "../interfaces/transaction.interface";
+import {
+  AuditMetadata,
+  TRANSACTION_METHOD,
+  TRANSACTION_STATUS,
+  TRANSACTION_TYPE,
+  TransactionDto,
+} from "../interfaces/transaction.interface";
 import { generateReference } from "../utils/reference";
+import { Wallet } from "src/interfaces/wallet.interface";
 
 export class TransactionService {
-  async fundWallet(userId: string, amount: number) {
+  async fundWallet(userId: string, amount: number, audit: AuditMetadata) {
     if (!userId || !amount || amount <= 0) {
       throw new AppError("Invalid fund wallet input");
     }
@@ -15,27 +22,49 @@ export class TransactionService {
     if (!wallet) throw new AppError("Wallet not found");
 
     const newBalance = Number(wallet.balance) + amount;
-    await walletRepository.updateBalance(wallet.id, newBalance);
-
-    const transaction: CreateTransactionDto = {
+    const transaction: TransactionDto = {
       wallet_id: wallet.id,
       sender_id: null,
       receiver_id: userId,
-      type: "FUND",
+      type: TRANSACTION_TYPE.FUND,
       amount,
       reference: generateReference(),
-      status: "SUCCESS",
+      status: TRANSACTION_STATUS.SUCCESS,
+      balance_before: wallet.balance,
+      balance_after: newBalance,
       metadata: {
-        method: "manual-fund",
+        method: TRANSACTION_METHOD.MANUAL_FUND,
+        initiatedBy: audit?.initiatedBy,
+        ipAddress: audit?.ipAddress,
+        device: audit?.device,
       },
     };
 
-    await transactionRepository.create(transaction);
-
-    return { balance: newBalance };
+    try {
+      await walletRepository.updateBalance(wallet.id, newBalance);
+      await transactionRepository.create(transaction);
+      return { balance: newBalance };
+    } catch (error: any) {
+      const failedTransaction: TransactionDto = {
+        ...transaction,
+        status: TRANSACTION_STATUS.FAILED,
+        metadata: {
+          ...(transaction.metadata ?? {}),
+          error: error.message,
+          method:
+            transaction.metadata?.method ?? TRANSACTION_METHOD.MANUAL_FUND,
+        },
+      };
+      await transactionRepository.create(failedTransaction);
+      throw new AppError("Funding failed: " + error.message);
+    }
   }
 
-  async withdrawFromWallet(userId: string, amount: number) {
+  async withdrawFromWallet(
+    userId: string,
+    amount: number,
+    audit: AuditMetadata
+  ) {
     if (!userId || !amount || amount <= 0) {
       throw new AppError("Invalid withdraw wallet input");
     }
@@ -47,61 +76,117 @@ export class TransactionService {
       throw new AppError("Insufficient wallet balance");
 
     const newBalance = Number(wallet.balance) - amount;
-    await walletRepository.updateBalance(wallet.id, newBalance);
-
-    const transaction: CreateTransactionDto = {
+    const transaction: TransactionDto = {
       wallet_id: wallet.id,
       sender_id: userId,
       receiver_id: null,
-      type: "WITHDRAW",
+      type: TRANSACTION_TYPE.WITHDRAW,
       amount,
       reference: generateReference(),
-      status: "SUCCESS",
+      status: TRANSACTION_STATUS.SUCCESS,
+      balance_before: wallet.balance,
+      balance_after: newBalance,
       metadata: {
-        method: "manual-withdrawal",
+        method: TRANSACTION_METHOD.MANUAL_WITHDRAWAL,
+        initiatedBy: audit?.initiatedBy,
+        ipAddress: audit?.ipAddress,
+        device: audit?.device,
       },
     };
 
-    await transactionRepository.create(transaction);
-
-    return { balance: newBalance };
+    try {
+      await walletRepository.updateBalance(wallet.id, newBalance);
+      await transactionRepository.create(transaction);
+      return { balance: newBalance };
+    } catch (error: any) {
+      const failedTransaction: TransactionDto = {
+        ...transaction,
+        status: TRANSACTION_STATUS.FAILED,
+        metadata: {
+          ...(transaction.metadata ?? {}),
+          error: error.message,
+          method:
+            transaction.metadata?.method ??
+            TRANSACTION_METHOD.MANUAL_WITHDRAWAL,
+        },
+      };
+      await transactionRepository.create(failedTransaction);
+      throw new AppError("Withdrawal failed: " + error.message);
+    }
   }
 
   async transferToWallet(
     senderUserId: string,
-    receiverUserId: string,
-    amount: number
+    receiverIdentifier: string | undefined,
+    receiverType: "id" | "email",
+    amount: number,
+    audit: AuditMetadata
   ) {
-    if (senderUserId === receiverUserId)
-      throw new AppError("Cannot transfer to yourself");
+    if (!receiverIdentifier)
+      throw new AppError("Receiver identifier is required");
 
     const senderWallet = await walletService.getWalletByUserId(senderUserId);
-    const receiverWallet = await walletService.getWalletByUserId(
-      receiverUserId
-    );
+
+    let receiverWallet: Wallet;
+    if (receiverType === "id") {
+      if (senderUserId === receiverIdentifier)
+        throw new AppError("Cannot transfer to yourself");
+
+      receiverWallet = await walletService.getWalletByUserId(
+        receiverIdentifier
+      );
+    } else if (receiverType === "email") {
+      receiverWallet = await walletService.getWalletByEmail(receiverIdentifier);
+      if (receiverWallet && receiverWallet.user_id === senderUserId)
+        throw new AppError("Cannot transfer to yourself");
+    } else {
+      throw new AppError("Invalid receiver type");
+    }
 
     if (!receiverWallet) throw new NotFoundError("Receiver wallet not found");
-
     if (senderWallet.balance < amount) throw new AppError("Insufficient funds");
 
-    const transaction: CreateTransactionDto = {
+    const transaction: TransactionDto = {
       wallet_id: senderWallet.id,
       sender_id: senderWallet.user_id,
       receiver_id: receiverWallet.user_id,
-      type: "TRANSFER",
+      type: TRANSACTION_TYPE.TRANSFER,
       amount,
       reference: generateReference(),
-      status: "SUCCESS",
+      status: TRANSACTION_STATUS.SUCCESS,
+      balance_before: senderWallet.balance,
+      balance_after: senderWallet.balance - amount,
+      metadata: {
+        method: TRANSACTION_METHOD.MANUAL_TRANSFER,
+        initiatedBy: audit?.initiatedBy,
+        ipAddress: audit?.ipAddress,
+        device: audit?.device,
+      },
     };
 
-    // Deduct from sender and add to receiver (within a transaction)
-    await transactionRepository.transferWithTransaction(
-      senderWallet,
-      receiverWallet,
-      transaction
-    );
+    try {
+      await transactionRepository.transferWithTransaction(
+        senderWallet,
+        receiverWallet,
+        transaction
+      );
+      return { transferred: amount, to: receiverIdentifier };
+    } catch (error: any) {
+      // Record failed transaction
+      const failedTransaction: TransactionDto = {
+        ...transaction,
+        status: TRANSACTION_STATUS.FAILED,
+        metadata: {
+          ...(transaction.metadata ?? {}),
+          error: error.message,
+          method:
+            transaction.metadata?.method ?? TRANSACTION_METHOD.MANUAL_TRANSFER,
+        },
+      };
+      await transactionRepository.create(failedTransaction);
 
-    return { transferred: amount, to: receiverUserId };
+      throw new AppError("Transaction failed: " + error.message);
+    }
   }
 }
 

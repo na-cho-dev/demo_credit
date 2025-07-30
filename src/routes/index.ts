@@ -8,6 +8,11 @@ import logger from "../utils/logger";
 
 export const router = async (req: IncomingMessage, res: ServerResponse) => {
   try {
+    logger.info(`[REQUEST] ${req.method} ${req.url}`, {
+      // ip: req.socket.remoteAddress,
+      // headers: req.headers,
+    });
+
     const handlers = [
       handleAuthRoutes,
       handleUserRoutes,
