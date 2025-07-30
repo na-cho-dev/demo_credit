@@ -1,6 +1,7 @@
 import knex from "knex";
-import config from "../knexfile";
 import logger from "../utils/logger";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const config = require("../knexfile");
 
 const env = process.env.NODE_ENV || "development";
 const db = knex(config[env]);
