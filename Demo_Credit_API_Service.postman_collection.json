@@ -1,11 +1,11 @@
 {
 	"info": {
-		"_postman_id": "39535063-2899-4115-adf8-03efef1cf552",
-		"name": "Demo Credit API Service",
-		"description": "Demo Credit is a mobile lending MVP wallet service built with NodeJS, TypeScript, KnexJS, and MySQL. It enables users to register, manage wallets, fund, withdraw, and transfer funds, with blacklist checks via the Lendsqr Adjutor Karma API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "38046602"
-	},
+    "_postman_id": "a000c104-85cd-4379-8f75-ff78c1ace616",
+    "name": "Demo Credit API Service",
+    "description": "Demo Credit is a mobile lending MVP wallet service built with NodeJS, TypeScript, KnexJS, and MySQL. It enables users to register, manage wallets, fund, withdraw, and transfer funds, with blacklist checks via the Lendsqr Adjutor Karma API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "38046602"
+  },
 	"item": [
 		{
 			"name": "Auth",
@@ -194,91 +194,96 @@
 		{
 			"name": "Transaction",
 			"item": [
-				{
-					"name": "Fund Wallet",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"amount\": 1500\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/transactions/fund",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"transactions",
-								"fund"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Withdraw From Wallet",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"amount\": 50\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/transactions/withdraw",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"transactions",
-								"withdraw"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Transfer To Wallet",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"amount\": 150,\n\t\"receiverUserId\": \"98a60a61-9112-417c-9189-fa3e865c3b6c\"\n\t// \"receiverUserId\": \"839ca5da-e3d6-49d8-aa31-a75bc114f30c\"\n\t// \"receiverEmail\": \"user@one.com\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/transactions/transfer",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"transactions",
-								"transfer"
-							]
-						}
-					},
-					"response": []
-				}
-			]
+        {
+          "name": "Get User's Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/transactions?limit=&page=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": ""
+                },
+                {
+                  "key": "page",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Fund Wallet",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"amount\": 1500\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transactions/fund",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "fund"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Withdraw From Wallet",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"amount\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transactions/withdraw",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "withdraw"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Transfer To Wallet",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\t\"amount\": 100,\n\t\"receiverUserId\": \"98a60a61-9112-417c-9189-fa3e865c3b6c\"\n\t// \"receiverUserId\": \"839ca5da-e3d6-49d8-aa31-a75bc114f30c\"\n\t// \"receiverEmail\": \"user@one.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/transactions/transfer",
+              "host": ["{{base_url}}"],
+              "path": ["api", "transactions", "transfer"]
+            }
+          },
+          "response": []
+        }
+      ]
 		},
 		{
 			"name": "Base Info",
@@ -333,7 +338,7 @@
 	"variable": [
     {
       "key": "base_url",
-      "value": "https://fortune-iheanacho-lendsqr-be-test.up.railway.app",
+      "value": "http://localhost:3300",
       "type": "string"
     },
     {
