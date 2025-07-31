@@ -166,7 +166,7 @@ A Postman collection is provided to help you test all API endpoints easily.
 ## Deployment
 
 Deployed at:  
-`https://<candidate-name>-lendsqr-be-test.<cloud-platform-domain>`
+`https://fortune-iheanacho-lendsqr-be-test.up.railway.app`
 
 ---
 
@@ -188,7 +188,7 @@ Deployed at:
 ## Links
 
 - **GitHub Repo:** [https://github.com/na-cho-dev/demo_credit](https://github.com/na-cho-dev/demo_credit)
-- **Live API URL:** [https://demo-credit.up.railway.app](https://demo-credit.up.railway.app)
+- **GitHub Repo:** [https://fortune-iheanacho-lendsqr-be-test.up.railway.app/](https://fortune-iheanacho-lendsqr-be-test.up.railway.app/)
 - **Design Document:** [Google Docs/Notion link]
 - **Video Review:** [Loom link]
 

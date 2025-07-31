@@ -331,15 +331,15 @@
 		}
 	],
 	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://localhost:3300",
-			"type": "string"
-		},
-		{
-			"key": "token",
-			"value": "",
-			"type": "string"
-		}
-	]
+    {
+      "key": "base_url",
+      "value": "https://fortune-iheanacho-lendsqr-be-test.up.railway.app",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
 }

@@ -27,7 +27,7 @@ export const router = async (req: IncomingMessage, res: ServerResponse) => {
 
     // Log and respond for root route
     if (req.url === "/" && req.method === "GET") {
-      logger.info("Root route accessed");
+      // logger.info("Root route accessed");
       sendResponse(res, 200, true, {
         message: "Welcome to DemoCredit API",
         environment: process.env.NODE_ENV,
