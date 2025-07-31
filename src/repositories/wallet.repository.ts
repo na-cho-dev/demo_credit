@@ -28,7 +28,7 @@ export class WalletRepository {
       .first();
   }
 
-  async updateBalance(walletId: number, newBalance: number) {
+  async updateBalance(walletId: string, newBalance: string) {
     return db("wallets")
       .where({ id: walletId })
       .update({ balance: newBalance });

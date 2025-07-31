@@ -3,7 +3,7 @@ import * as http from "http";
 import { parse } from "url";
 import { router } from "./routes/index";
 import logger from "./utils/logger";
-import { HOST, NODE_ENV, PORT } from "./config/env";
+import { HOST, KARMA_CHECK, NODE_ENV, PORT } from "./config/env";
 
 const server = http.createServer(async (req, res) => {
   const { pathname } = parse(req.url || "", true);
@@ -30,6 +30,8 @@ server.listen(PORT, HOST, () => {
     port: PORT,
     startedAt: new Date().toLocaleString(),
   });
+  if (KARMA_CHECK === "false")
+    logger.warn("Karma blacklist check is disabled by environment variable.");
 });
 
 

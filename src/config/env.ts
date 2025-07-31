@@ -24,3 +24,5 @@ export const DB_PASSWORD = getEnv("DB_PASSWORD");
 export const DB_NAME = getEnv("DB_NAME");
 export const DB_PORT = parseInt(getEnv("DB_PORT", "3306"), 10);
 export const ADJUTOR_API_KEY = getEnv("ADJUTOR_API_KEY");
+export const KARMA_CHECK = getEnv("KARMA_CHECK", "false");
+

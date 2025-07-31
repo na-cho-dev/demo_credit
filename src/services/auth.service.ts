@@ -32,12 +32,6 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedError("User does not exist");
 
-    const payload = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
     const wallet = await walletService.getWalletByEmail(email);
 
     const token = `fake-token-${user.id}`;

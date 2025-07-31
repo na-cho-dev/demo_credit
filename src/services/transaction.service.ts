@@ -41,7 +41,7 @@ export class TransactionService {
     };
 
     try {
-      await walletRepository.updateBalance(wallet.id, newBalance);
+      await walletRepository.updateBalance(wallet.id, String(newBalance));
       await transactionRepository.create(transaction);
       return { balance: newBalance };
     } catch (error: any) {
@@ -95,7 +95,7 @@ export class TransactionService {
     };
 
     try {
-      await walletRepository.updateBalance(wallet.id, newBalance);
+      await walletRepository.updateBalance(wallet.id, String(newBalance));
       await transactionRepository.create(transaction);
       return { balance: newBalance };
     } catch (error: any) {
