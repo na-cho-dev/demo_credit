@@ -2,14 +2,15 @@ import { walletRepository } from "../repositories/wallet.repository";
 import { AppError } from "../errors/AppError";
 
 export class WalletService {
+  async createWalletForUser(userId: string) {
+    const wallet = await walletRepository.create(userId);
+    return wallet;
+  }
+
   async getWalletByUserId(userId: string) {
     const wallet = await walletRepository.findByUserId(userId);
     if (!wallet) throw new AppError("Wallet not found");
     return wallet;
-  }
-
-  async createWalletForUser(userId: number) {
-    return walletRepository.create(userId);
   }
 
   async getWalletById(walletId: string) {

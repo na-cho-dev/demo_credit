@@ -22,11 +22,14 @@ export class AuthHandler {
         });
       }
 
-      const { user, token } = await authService.register(full_name, email);
+      const { user, wallet, token } = await authService.register(
+        full_name,
+        email
+      );
 
       sendResponse(res, 201, true, {
         message: "User registered successfully",
-        data: { ...user, token },
+        data: { user: { ...user }, wallet, token },
       });
     } catch (err: any) {
       sendResponse(res, err.statusCode || 500, false, {
@@ -44,11 +47,11 @@ export class AuthHandler {
         return sendResponse(res, 400, false, { error: "Email is required" });
       }
 
-      const { user, token } = await authService.login(email);
+      const { user, wallet, token } = await authService.login(email);
 
       sendResponse(res, 200, true, {
         message: "Login successful",
-        data: { ...user, token },
+        data: { user: { ...user }, wallet, token },
       });
     } catch (err: any) {
       logger.error(`[AUTH LOGIN ERROR]: ${err.message}`);

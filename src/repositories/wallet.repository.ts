@@ -1,9 +1,15 @@
 import { Knex } from "knex";
 import db from "../config/db";
+import { v4 as uuidv4 } from "uuid";
+import logger from "../utils/logger";
 
 export class WalletRepository {
-  async create(userId: number) {
-    return db("wallets").insert({ user_id: userId, balance: 0 });
+  async create(userId: string) {
+    const id = uuidv4();
+    await db("wallets").insert({ id, user_id: userId, balance: 0 });
+    const wallet = await this.findById(id);
+
+    return wallet;
   }
 
   async findByUserId(userId: string) {

@@ -16,7 +16,7 @@ export function getRouteParams(
   return params;
 }
 
-export function getQueryParams(url: string): Record<string, string> {
+export function getQueryParams(url: string, param: string): string | undefined {
   const { query } = parse(url, true);
-  return query as Record<string, string>;
+  return query[param] as string | undefined;
 }

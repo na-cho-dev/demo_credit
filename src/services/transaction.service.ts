@@ -10,7 +10,7 @@ import {
   TransactionDto,
 } from "../interfaces/transaction.interface";
 import { generateReference } from "../utils/reference";
-import { Wallet } from "src/interfaces/wallet.interface";
+import { Wallet } from "../interfaces/wallet.interface";
 
 export class TransactionService {
   async fundWallet(userId: string, amount: number, audit: AuditMetadata) {
@@ -122,6 +122,9 @@ export class TransactionService {
     amount: number,
     audit: AuditMetadata
   ) {
+    if (!amount || amount <= 0 || typeof amount !== "number")
+      throw new AppError("Amount must be a positive number");
+
     if (!receiverIdentifier)
       throw new AppError("Receiver identifier is required");
 
@@ -186,6 +189,29 @@ export class TransactionService {
       await transactionRepository.create(failedTransaction);
 
       throw new AppError("Transaction failed: " + error.message);
+    }
+  }
+
+  async getUserTransactions(userId: string, limit: number, offset: number) {
+    try {
+      if (!userId) throw new AppError("User ID is required");
+
+      const transactions = await transactionRepository.getUserTransactions(
+        userId,
+        limit,
+        offset
+      );
+
+      if (!transactions || transactions.length === 0)
+        throw new NotFoundError("No transactions found for this user");
+
+      const total = await transactionRepository.getUserTotalTransactions(
+        userId
+      );
+
+      return { transactions, total };
+    } catch (error: any) {
+      throw new AppError("Failed to retrieve transactions: " + error.message);
     }
   }
 }

@@ -8,6 +8,7 @@ import {
   TransferToWalletDto,
   WithdrawFromWalletDto,
 } from "../interfaces/transaction.interface";
+import { getQueryParams } from "../utils/requestParams";
 
 export class TransactionHandler {
   async fundWallet(req: IncomingMessage, res: ServerResponse) {
@@ -133,6 +134,34 @@ export class TransactionHandler {
       });
     }
   }
-}
 
+  async getUserTransactions(req: IncomingMessage, res: ServerResponse) {
+    try {
+      const userId = String(req.user?.id);
+      const limit = Number(getQueryParams(req.url ?? "", "limit")) || 10;
+      const page = Number(getQueryParams(req.url ?? "", "page")) || 1;
+      const offset = (page - 1) * limit;
+
+      // Get transactions and total count (update your service to support this)
+      const { transactions, total } =
+        await transactionService.getUserTransactions(userId, limit, offset);
+
+      return sendResponse(res, 200, true, {
+        data: transactions,
+        meta: {
+          limit,
+          page,
+          offset,
+          total,
+          count: transactions.length,
+          totalPages: Math.ceil(total / limit),
+        },
+      });
+    } catch (err: any) {
+      return sendResponse(res, 400, false, {
+        error: err.message,
+      });
+    }
+  }
+}
 export const transactionHandler = new TransactionHandler();

@@ -9,10 +9,7 @@ export class TransactionRepository {
     return db("transactions").insert(data);
   }
 
-  async createWithinTrx(
-    transaction: TransactionDto,
-    trx: Knex.Transaction
-  ) {
+  async createWithinTrx(transaction: TransactionDto, trx: Knex.Transaction) {
     return trx("transactions").insert(transaction);
   }
 
@@ -43,6 +40,24 @@ export class TransactionRepository {
 
       await this.createWithinTrx(transaction, trx);
     });
+  }
+
+  async getUserTransactions(
+    userId: string,
+    limit: number = 10,
+    offset: number = 0
+  ) {
+    return db("transactions")
+      .where("sender_id", userId)
+      .orderBy("created_at", "desc")
+      .limit(limit)
+      .offset(offset);
+  }
+
+  async getUserTotalTransactions(userId: string) {
+    const result = await db("transactions").where("sender_id", userId).count();
+    const countKey = Object.keys(result[0])[0];
+    return Number(result[0][countKey]);
   }
 }
 
