@@ -17,7 +17,7 @@ export const getEnv = (key: string, defaultValue?: string): string => {
 
 export const PORT = parseInt(getEnv("PORT", "3330"), 10);
 export const NODE_ENV = getEnv("NODE_ENV", "development");
-export const HOST = getEnv("HOST", "localhost");
+export const HOST = getEnv("HOST", "0.0.0.0");
 export const DB_HOST = getEnv("DB_HOST");
 export const DB_USER = getEnv("DB_USER");
 export const DB_PASSWORD = getEnv("DB_PASSWORD");

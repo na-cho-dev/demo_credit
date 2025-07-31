@@ -188,6 +188,7 @@ Deployed at:
 ## Links
 
 - **GitHub Repo:** [https://github.com/na-cho-dev/demo_credit](https://github.com/na-cho-dev/demo_credit)
+- **Live API URL:** [https://demo-credit.up.railway.app](https://demo-credit.up.railway.app)
 - **Design Document:** [Google Docs/Notion link]
 - **Video Review:** [Loom link]
 

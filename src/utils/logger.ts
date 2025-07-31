@@ -7,9 +7,12 @@ const isDevelopment = NODE_ENV === "development";
 
 // Custom log format for development
 const devFormat = printf(({ level, message, timestamp, ...meta }) => {
+  // ANSI color for yellow
+  const YELLOW = "\x1b[33m";
+  const RESET = "\x1b[0m";
   const metaString =
     meta && Object.keys(meta).length
-      ? `\n${JSON.stringify(meta, null, 2)}`
+      ? `\n${YELLOW}${JSON.stringify(meta, null, 2)}${RESET}`
       : "";
   return `[${level}] ${timestamp} - ${message}${metaString}`;
 });
@@ -24,7 +27,12 @@ const logger = winston.createLogger({
         errors({ stack: true }),
         devFormat
       )
-    : combine(timestamp(), errors({ stack: true }), json()),
+    : combine(
+        colorize({ all: true }),
+        timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        errors({ stack: true }),
+        devFormat
+      ),
   transports: [
     new winston.transports.Console(),
     ...(isDevelopment
