@@ -74,6 +74,7 @@ src/
 | GET    | `/api/users/me`                  | Get current user profile      | Yes           |
 | GET    | `/api/wallets/me`                | Get current user's wallet     | Yes           |
 | GET    | `/api/wallets/:walletId/balance` | Get a user's wallet balance   | Yes           |
+| POST   | `/api/transactions?limit=&page=` | View users transactions       | Yes           |
 | POST   | `/api/transactions/fund`         | Fund wallet                   | Yes           |
 | POST   | `/api/transactions/withdraw`     | Withdraw from wallet          | Yes           |
 | POST   | `/api/transactions/transfer`     | Transfer to another wallet    | Yes           |
@@ -84,10 +85,95 @@ Use the returned `token` as a Bearer token in the `Authorization` header:
 
 ---
 
+## Request & Response Format
+
+All API responses are in JSON format.
+
+### Success Response
+
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "Operation successful",
+  "data": {
+    // ...resource-specific fields
+  }
+}
+```
+
+**Example:**  
+_Fetching current user wallet:_
+```json
+{
+  "success": true,
+  "status": 200,
+  "message": "Wallet retrieved successfully",
+  "data": {
+    "id": "wallet-id",
+    "user_id": "user-id",
+    "balance": 1000,
+    "created_at": "2024-08-02T10:00:00.000Z"
+  }
+}
+```
+
+---
+
+### Error Response
+
+```json
+{
+  "success": false,
+  "status": 400,
+  "error": "Error message describing what went wrong"
+}
+```
+
+**Example:**  
+_Attempting to withdraw more than balance:_
+```json
+{
+  "success": false,
+  "status": 400,
+  "error": "Insufficient funds"
+}
+```
+
+---
+
+## Error Handling
+
+- All errors return a consistent JSON structure with `success: false`, an HTTP status code, and an `error` message.
+- Common error status codes:
+  - `400` – Bad Request (validation errors, insufficient funds, etc.)
+  - `401` – Unauthorized (missing or invalid token)
+  - `403` – Forbidden (blacklisted user, forbidden action)
+  - `404` – Not Found (resource does not exist)
+  - `409` – Conflict (duplicate registration, etc.)
+  - `500` – Internal Server Error (unexpected issues)
+
+**Example Error Response:**
+```json
+{
+  "success": false,
+  "status": 401,
+  "error": "Unauthorized: Missing token"
+}
+```
+
+---
+
 ## Adjutor Karma Blacklist Integration
 
-- On registration, the user's email is checked against the Adjutor Karma blacklist using the API key in `.env`.
-- Blacklisted users are rejected with a relevant error.
+Adjutor Karma Blacklist Check Toggle:  
+To accommodate Adjutor API limitations for unverified accounts, the blacklist check can be enabled or disabled in any environment using the `KARMA_CHECK` environment variable.
+
+- When `KARMA_CHECK=false`, the blacklist check is bypassed, allowing user onboarding and testing to proceed even if the Adjutor API would otherwise block registration. This is useful during development or while your Adjutor account is not fully verified.
+- Once your Adjutor account is verified, set `KARMA_CHECK=true` to enforce the real blacklist check in production for compliance.
+
+On registration, the user's email is checked against the Adjutor Karma blacklist using the API key in `.env`.  
+Blacklisted users are rejected with a relevant error when the check
 
 ---
 
@@ -117,6 +203,7 @@ DB_PASSWORD=
 DB_NAME=demo_credit_db
 
 ADJUTOR_API_KEY=...
+KARMA_CHECK=false
 ```
 
 ---
@@ -155,11 +242,13 @@ pnpm test
 A Postman collection is provided to help you test all API endpoints easily.
 
 - **Download:** [Demo Credit Postman Collection](./Demo_Credit_API_Service.postman_collection.json)
+- **Or use online:** [Demo Credit API Service (Postman Cloud)](https://www.postman.com/nacho6/nacho-pws/collection/hs3sjuk/demo-credit-api-service?action=share&creator=38046602)
 
 **How to use:**
-1. Import the collection into Postman.
-2. Set up environment variables if needed (e.g., base URL, token).
+1. Import the collection into Postman (or use the cloud link above).
+2. Set up environment variables if needed (e.g., `base_url`, `token`).
 3. Use the provided requests to test registration, login, wallet, and transaction endpoints.
+4. Refer to the request descriptions for required fields and authentication details.
 
 ---
 
