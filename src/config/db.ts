@@ -12,11 +12,11 @@ const db = knex(knexConfig[env]);
 export const connectToDatabase = async (): Promise<void> => {
   try {
     await db.raw("SELECT 1");
-    logger.info("Database connected ✅");
+    logger.info("🟢 Database connected successfully!");
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown database error";
-    logger.error(`Database connection failed ❌: ${errorMessage}`);
+    logger.error(`❌ Database connection failed : ${errorMessage}`);
     throw new Error(`Database connection failed: ${errorMessage}`);
   }
 };

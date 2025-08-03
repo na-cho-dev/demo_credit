@@ -35,12 +35,75 @@ Demo Credit is a mobile lending MVP wallet service built with **NodeJS**, **Type
 
 ## Tech Stack
 
-- **NodeJS (LTS)**
+- **Runtime**: Node.js
+- **Language**: TypeScript
+- **Database**: MySQL with Knex.js ORM
+- **Logging**: Winston
+- **Testing**: Jest
+- **Code Quality**: ESLint + Prettier
+- **Package Manager**: pnpm
+
+<!-- - **NodeJS (LTS)**
 - **TypeScript**
 - **KnexJS ORM**
-- **MySQL**
-- **Winston** (logging)
-- **dotenv** (environment variables)
+- **MySQL** (Database)
+- **ESLint + Prettier** (Code Quality)
+- **Winston** (Logging)
+- **dotenv** (Environment Variables) -->
+
+## Prerequisites
+
+- Node.js (>=18.0.0)
+- MySQL (>=8.0)
+- pnpm (>=8.0.0)
+
+---
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd demo_credit
+```
+
+2. Install dependencies:
+```bash
+pnpm install
+```
+
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
+
+4. Configure your `.env` file:
+```env
+NODE_ENV=development
+PORT=3300
+HOST=localhost
+
+# Database configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=your_mysql_username
+DB_PASSWORD=your_mysql_password
+DB_NAME=demo_credit_db
+
+# API keys
+ADJUTOR_API_KEY=your_api_key_here
+KARMA_CHECK=false
+```
+
+5. Set up the database:
+```bash
+# Create database in MySQL
+mysql -u root -p
+CREATE DATABASE demo_credit_db;
+
+# Run migrations
+pnpm run migrate:latest
+```
 
 ---
 
@@ -62,6 +125,88 @@ src/
   server.ts       # HTTP server entrypoint
 .env              # Environment variables
 ```
+
+---
+
+## Development Scripts
+
+### Core Development
+```bash
+# Start development server with hot reload
+pnpm run dev
+
+# Build for production
+pnpm run build
+
+# Start production server
+pnpm run start
+```
+
+### Database Operations
+```bash
+# Create a new migration
+pnpm run migrate:create <migration_name>
+
+# Run latest migrations
+pnpm run migrate:latest
+
+# Rollback last migration
+pnpm run migrate:rollback
+```
+
+### Code Quality & Testing
+```bash
+# Run ESLint (check and fix)
+pnpm run lint
+
+# Run ESLint (check only)
+pnpm run lint:check
+
+# Format code with Prettier
+pnpm run format
+
+# Check code formatting
+pnpm run format:check
+
+# Run tests
+pnpm run test
+
+# Run tests with coverage
+pnpm run test:coverage
+
+# Run all validation checks (lint + format + build + test)
+pnpm run validate
+```
+
+## Code Quality
+
+This project enforces code quality through:
+
+- **ESLint**: Linting with TypeScript-specific rules
+- **Prettier**: Consistent code formatting  
+- **TypeScript**: Strong typing and compile-time checks
+- **Jest**: Comprehensive testing framework
+- **Husky**: Pre-commit hooks for quality gates
+
+### Pre-commit Hooks
+
+The project uses Husky with lint-staged to automatically:
+- Run ESLint and fix issues
+- Format code with Prettier
+- Ensure code quality before commits
+
+### Validation Pipeline
+
+Before deploying or merging code, run:
+```bash
+pnpm run validate
+```
+
+This command runs:
+1. ESLint checks (without auto-fix)
+2. Prettier format validation
+3. TypeScript compilation
+4. Complete test suite
 
 ---
 
@@ -164,6 +309,17 @@ _Attempting to withdraw more than balance:_
 
 ---
 
+## Database Design
+
+See [`src/database/migrations/`](src/database/migrations/) for schema definitions.
+
+### E-R Diagram
+
+![ER Diagram](demo-credit_er_diag.png)  
+<!-- <iframe width="100%" height="500px" allowtransparency="true" allowfullscreen="true" scrolling="no" title="Embedded DB Designer IFrame" frameborder="0" src='https://erd.dbdesigner.net/designer/schema/1753697251-demo-credit?embed=true'></iframe> -->
+
+---
+
 ## Adjutor Karma Blacklist Integration
 
 Adjutor Karma Blacklist Check Toggle:  
@@ -177,62 +333,38 @@ Blacklisted users are rejected with a relevant error when the check
 
 ---
 
-## Database Design
+## Design Decisions
 
-See [`src/database/migrations/`](src/database/migrations/) for schema definitions.
-
-### E-R Diagram
-
-![ER Diagram](demo-credit_er_diag.png)  
-<!-- <iframe width="100%" height="500px" allowtransparency="true" allowfullscreen="true" scrolling="no" title="Embedded DB Designer IFrame" frameborder="0" src='https://erd.dbdesigner.net/designer/schema/1753697251-demo-credit?embed=true'></iframe> -->
-
----
-
-## Environment Variables
-
-See [`.env.example`](.env.example):
-
-```
-NODE_ENV=development
-PORT=3300
-
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=
-DB_PASSWORD=
-DB_NAME=demo_credit_db
-
-ADJUTOR_API_KEY=...
-KARMA_CHECK=false
-```
-
----
-
-## Running Locally
-
-1. **Install dependencies:**
-   ```sh
-   pnpm install
-   ```
-2. **Set up `.env` file** (see above).
-3. **Run migrations:**
-   ```sh
-   pnpm migrate:latest
-   ```
-4. **Start server:**
-   ```sh
-   pnpm dev
-   ```
+- **Faux Token Auth:**  
+  Simplifies authentication for MVP; tokens are generated as `fake-token-<userId>`.
+- **Service Layer:**  
+  Encapsulates business logic for maintainability.
+- **Knex Transactions:**  
+  Ensures atomicity for wallet transfers.
+- **Custom Errors:**  
+  Improves error reporting and handling.
+- **Blacklist Check:**  
+  Ensures compliance with Lendsqr requirements.
 
 ---
 
 ## Testing
 
-Unit tests cover positive and negative scenarios for registration, wallet funding, withdrawal, and transfer.
+The project uses Jest for testing with:
+- Unit tests for services and utilities
+- Integration tests for API endpoints
+- Coverage reporting
+- TypeScript support via ts-jest
 
-Run tests:
-```sh
-pnpm test
+```bash
+# Run all tests
+pnpm run test
+
+# Run tests with coverage report
+pnpm run test:coverage
+
+# Run tests in watch mode
+pnpm run test --watch
 ```
 
 ---
@@ -259,21 +391,6 @@ Deployed at:
 
 ---
 
-## Design Decisions
-
-- **Faux Token Auth:**  
-  Simplifies authentication for MVP; tokens are generated as `fake-token-<userId>`.
-- **Service Layer:**  
-  Encapsulates business logic for maintainability.
-- **Knex Transactions:**  
-  Ensures atomicity for wallet transfers.
-- **Custom Errors:**  
-  Improves error reporting and handling.
-- **Blacklist Check:**  
-  Ensures compliance with Lendsqr requirements.
-
----
-
 ## Links
 
 - **GitHub Repo:** [https://github.com/na-cho-dev/demo_credit](https://github.com/na-cho-dev/demo_credit)
@@ -281,4 +398,14 @@ Deployed at:
 - **Design Document:** [Google Docs](https://docs.google.com/document/d/1LVBiNT5SypErJP2t1KxWs1hEbK36KmDzE9X_HCqjRJM/edit?usp=sharing)
 - **Video Review:** [Loom link](https://www.loom.com/share/8170266afd7e46288756d84ac5036bfd?sid=53978e19-0530-4add-a35c-a9dc269d3bad)
 
+---
 
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run `pnpm run validate` to ensure code quality
+5. Commit your changes (pre-commit hooks will run automatically)
+6. Push to your branch
+7. Create a Pull Request

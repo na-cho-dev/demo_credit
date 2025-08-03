@@ -48,14 +48,20 @@ export class TransactionRepository {
     offset: number = 0
   ) {
     return db("transactions")
-      .where("sender_id", userId)
+      .where(function () {
+        this.where("sender_id", userId).orWhere("receiver_id", userId);
+      })
       .orderBy("created_at", "desc")
       .limit(limit)
       .offset(offset);
   }
 
   async getUserTotalTransactions(userId: string) {
-    const result = await db("transactions").where("sender_id", userId).count();
+    const result = await db("transactions")
+      .where(function () {
+        this.where("sender_id", userId).orWhere("receiver_id", userId);
+      })
+      .count();
     const countKey = Object.keys(result[0])[0];
     return Number(result[0][countKey]);
   }
