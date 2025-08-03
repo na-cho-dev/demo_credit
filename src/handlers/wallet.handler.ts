@@ -18,12 +18,13 @@ export class WalletHandler {
         message: "Wallet retrieved successfully",
         data: wallet,
       });
-    } catch (err: any) {
-      return sendResponse(res, 400, false, {
-        error: err.message,
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return sendResponse(res, 400, false, {
+          error: err.message,
+        });
+      }
     }
-    
   }
 
   async getUserWalletById(req: IncomingMessage, res: ServerResponse) {
@@ -55,10 +56,12 @@ export class WalletHandler {
         message: "Wallet retrieved successfully",
         data: wallet,
       });
-    } catch (error: any) {
-      return sendResponse(res, 400, false, {
-        error: error.message,
-      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return sendResponse(res, 400, false, {
+          error: error.message,
+        });
+      }
     }
   }
 }

@@ -28,10 +28,12 @@ export class UserHandler {
         status: 200,
         data: { user, wallet },
       });
-    } catch (error: any) {
-      return sendResponse(res, 400, false, {
-        error: error.message,
-      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        return sendResponse(res, 400, false, {
+          error: error.message,
+        });
+      }
     }
   }
 }

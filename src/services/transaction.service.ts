@@ -14,12 +14,13 @@ import { Wallet } from "../interfaces/wallet.interface";
 
 export class TransactionService {
   async fundWallet(userId: string, amount: number, audit: AuditMetadata) {
-    if (!userId || !amount || amount <= 0) {
+    if (!userId || !amount || amount <= 0)
       throw new AppError("Invalid fund wallet input");
-    }
 
-    const wallet = await walletRepository.findByUserId(userId);
-    if (!wallet) throw new AppError("Wallet not found");
+    const wallet = (await walletRepository.findByUserId(
+      userId
+    )) as Wallet | null;
+    if (!wallet) throw new NotFoundError("Wallet not found");
 
     const newBalance = Number(wallet.balance) + amount;
     const transaction: TransactionDto = {
@@ -44,19 +45,21 @@ export class TransactionService {
       await walletRepository.updateBalance(wallet.id, String(newBalance));
       await transactionRepository.create(transaction);
       return { balance: newBalance };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       const failedTransaction: TransactionDto = {
         ...transaction,
         status: TRANSACTION_STATUS.FAILED,
         metadata: {
           ...(transaction.metadata ?? {}),
-          error: error.message,
+          error: errorMessage,
           method:
             transaction.metadata?.method ?? TRANSACTION_METHOD.MANUAL_FUND,
         },
       };
       await transactionRepository.create(failedTransaction);
-      throw new AppError("Funding failed: " + error.message);
+      throw new AppError("Funding failed: " + errorMessage);
     }
   }
 
@@ -65,12 +68,13 @@ export class TransactionService {
     amount: number,
     audit: AuditMetadata
   ) {
-    if (!userId || !amount || amount <= 0) {
+    if (!userId || !amount || amount <= 0)
       throw new AppError("Invalid withdraw wallet input");
-    }
 
-    const wallet = await walletRepository.findByUserId(userId);
-    if (!wallet) throw new AppError("Wallet not found");
+    const wallet = (await walletRepository.findByUserId(
+      userId
+    )) as Wallet | null;
+    if (!wallet) throw new NotFoundError("Wallet not found");
 
     if (Number(wallet.balance) < amount)
       throw new AppError("Insufficient wallet balance");
@@ -98,20 +102,22 @@ export class TransactionService {
       await walletRepository.updateBalance(wallet.id, String(newBalance));
       await transactionRepository.create(transaction);
       return { balance: newBalance };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       const failedTransaction: TransactionDto = {
         ...transaction,
         status: TRANSACTION_STATUS.FAILED,
         metadata: {
           ...(transaction.metadata ?? {}),
-          error: error.message,
+          error: errorMessage,
           method:
             transaction.metadata?.method ??
             TRANSACTION_METHOD.MANUAL_WITHDRAWAL,
         },
       };
       await transactionRepository.create(failedTransaction);
-      throw new AppError("Withdrawal failed: " + error.message);
+      throw new AppError("Withdrawal failed: " + errorMessage);
     }
   }
 
@@ -135,9 +141,8 @@ export class TransactionService {
       if (senderUserId === receiverIdentifier)
         throw new AppError("Cannot transfer to yourself");
 
-      receiverWallet = await walletService.getWalletByUserId(
-        receiverIdentifier
-      );
+      receiverWallet =
+        await walletService.getWalletByUserId(receiverIdentifier);
     } else if (receiverType === "email") {
       receiverWallet = await walletService.getWalletByEmail(receiverIdentifier);
       if (receiverWallet && receiverWallet.user_id === senderUserId)
@@ -174,21 +179,23 @@ export class TransactionService {
         transaction
       );
       return { transferred: amount, to: receiverIdentifier };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       // Record failed transaction
       const failedTransaction: TransactionDto = {
         ...transaction,
         status: TRANSACTION_STATUS.FAILED,
         metadata: {
           ...(transaction.metadata ?? {}),
-          error: error.message,
+          error: errorMessage,
           method:
             transaction.metadata?.method ?? TRANSACTION_METHOD.MANUAL_TRANSFER,
         },
       };
       await transactionRepository.create(failedTransaction);
 
-      throw new AppError("Transaction failed: " + error.message);
+      throw new AppError("Transaction failed: " + errorMessage);
     }
   }
 
@@ -196,22 +203,23 @@ export class TransactionService {
     try {
       if (!userId) throw new AppError("User ID is required");
 
-      const transactions = await transactionRepository.getUserTransactions(
+      const transactions = (await transactionRepository.getUserTransactions(
         userId,
         limit,
         offset
-      );
+      )) as TransactionDto[];
 
       if (!transactions || transactions.length === 0)
         throw new NotFoundError("No transactions found for this user");
 
-      const total = await transactionRepository.getUserTotalTransactions(
-        userId
-      );
+      const total =
+        await transactionRepository.getUserTotalTransactions(userId);
 
       return { transactions, total };
-    } catch (error: any) {
-      throw new AppError("Failed to retrieve transactions: " + error.message);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      throw new AppError("Failed to retrieve transactions: " + errorMessage);
     }
   }
 }

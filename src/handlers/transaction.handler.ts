@@ -36,10 +36,12 @@ export class TransactionHandler {
         message: "Wallet funded successfully",
         data: result,
       });
-    } catch (err: any) {
-      return sendResponse(res, 400, false, {
-        error: err.message,
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return sendResponse(res, 400, false, {
+          error: err.message,
+        });
+      }
     }
   }
 
@@ -74,10 +76,12 @@ export class TransactionHandler {
         message: "Withdrawal successful",
         data: result,
       });
-    } catch (err: any) {
-      return sendResponse(res, 400, false, {
-        error: err.message,
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return sendResponse(res, 400, false, {
+          error: err.message,
+        });
+      }
     }
   }
 
@@ -128,10 +132,12 @@ export class TransactionHandler {
         message: "Transfer successful",
         data: result,
       });
-    } catch (err: any) {
-      return sendResponse(res, 400, false, {
-        error: err.message,
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return sendResponse(res, 400, false, {
+          error: err.message,
+        });
+      }
     }
   }
 
@@ -157,10 +163,12 @@ export class TransactionHandler {
           totalPages: Math.ceil(total / limit),
         },
       });
-    } catch (err: any) {
-      return sendResponse(res, 400, false, {
-        error: err.message,
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        return sendResponse(res, 400, false, {
+          error: err.message,
+        });
+      }
     }
   }
 }

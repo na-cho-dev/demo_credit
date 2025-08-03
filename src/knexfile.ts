@@ -1,14 +1,14 @@
-import { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } from "./config/env";
+import { envConfig } from "./config/env";
 
 const config = {
   development: {
     client: "mysql2",
     connection: {
-      host: DB_HOST,
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-      port: DB_PORT,
+      host: envConfig.DB_HOST,
+      user: envConfig.DB_USER,
+      password: envConfig.DB_PASSWORD,
+      database: envConfig.DB_NAME,
+      port: envConfig.DB_PORT,
     },
     migrations: {
       directory: "./database/migrations",
@@ -19,11 +19,11 @@ const config = {
   staging: {
     client: "mysql2",
     connection: {
-      host: DB_HOST,
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-      port: DB_PORT,
+      host: envConfig.DB_HOST,
+      user: envConfig.DB_USER,
+      password: envConfig.DB_PASSWORD,
+      database: envConfig.DB_NAME,
+      port: envConfig.DB_PORT,
     },
     migrations: {
       directory: "./database/migrations",
@@ -34,11 +34,11 @@ const config = {
   test: {
     client: "mysql2",
     connection: {
-      host: DB_HOST,
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-      port: DB_PORT,
+      host: envConfig.DB_HOST,
+      user: envConfig.DB_USER,
+      password: envConfig.DB_PASSWORD,
+      database: envConfig.DB_NAME,
+      port: envConfig.DB_PORT,
     },
     migrations: {
       directory: "./database/migrations",
@@ -49,11 +49,11 @@ const config = {
   production: {
     client: "mysql2",
     connection: {
-      host: DB_HOST,
-      user: DB_USER,
-      password: DB_PASSWORD,
-      database: DB_NAME,
-      port: DB_PORT,
+      host: envConfig.DB_HOST,
+      user: envConfig.DB_USER,
+      password: envConfig.DB_PASSWORD,
+      database: envConfig.DB_NAME,
+      port: envConfig.DB_PORT,
     },
     migrations: {
       directory: "./database/migrations",

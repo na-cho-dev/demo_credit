@@ -31,9 +31,17 @@ export class AuthHandler {
         message: "User registered successfully",
         data: { user: { ...user }, wallet, token },
       });
-    } catch (err: any) {
-      sendResponse(res, err.statusCode || 500, false, {
-        error: err.message,
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      const statusCode =
+        err instanceof Error &&
+        "statusCode" in err &&
+        typeof (err as Record<string, unknown>).statusCode === "number"
+          ? ((err as Record<string, unknown>).statusCode as number)
+          : 500;
+
+      sendResponse(res, statusCode, false, {
+        error: message,
       });
     }
   }
@@ -43,9 +51,8 @@ export class AuthHandler {
       const body = await parseBody(req);
       const validatedBody = validateBody<LoginUserDto>(body, ["email"]);
       const { email } = validatedBody;
-      if (!email) {
+      if (!email)
         return sendResponse(res, 400, false, { error: "Email is required" });
-      }
 
       const { user, wallet, token } = await authService.login(email);
 
@@ -53,9 +60,17 @@ export class AuthHandler {
         message: "Login successful",
         data: { user: { ...user }, wallet, token },
       });
-    } catch (err: any) {
-      logger.error(`[AUTH LOGIN ERROR]: ${err.message}`);
-      sendResponse(res, err.statusCode || 500, false, { error: err.message });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      const statusCode =
+        err instanceof Error &&
+        "statusCode" in err &&
+        typeof (err as Record<string, unknown>).statusCode === "number"
+          ? ((err as Record<string, unknown>).statusCode as number)
+          : 500;
+
+      logger.error(`[AUTH LOGIN ERROR]: ${message}`);
+      sendResponse(res, statusCode, false, { error: message });
     }
   }
 }

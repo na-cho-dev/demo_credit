@@ -90,7 +90,7 @@ describe("User Login", () => {
     const { userRepository } = require("../src/repositories/user.repository");
     userRepository.findByEmail.mockResolvedValue(null);
     await expect(authService.login("nonexistent@example.com")).rejects.toThrow(
-      "User does not exist"
+      "Invalid email or password"
     );
   });
 });

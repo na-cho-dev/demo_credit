@@ -29,8 +29,10 @@ export const authMiddleware = async (
 
     req.user = user;
     await next();
-  } catch (err: any) {
-    logger.error(`[AUTH MIDDLEWARE ERROR]: ${err.message}`);
-    return sendResponse(res, 500, false, { error: "Internal Server Error" });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      logger.error(`[AUTH MIDDLEWARE ERROR]: ${err.message}`);
+      return sendResponse(res, 500, false, { error: "Internal Server Error" });
+    }
   }
 };

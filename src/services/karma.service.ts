@@ -1,18 +1,25 @@
 import axios from "axios";
-import { ADJUTOR_API_KEY, KARMA_CHECK } from "../config/env";
 import logger from "../utils/logger";
+import { envConfig } from "../config/env";
+
+interface KarmaResponse {
+  status: string;
+  data?: {
+    karma_identity?: string;
+  };
+}
 
 export async function isUserBlacklisted(identity: string): Promise<boolean> {
-  if (KARMA_CHECK === "false") {
+  if (envConfig.KARMA_CHECK === "false") {
     logger.warn("Karma blacklist check is disabled by environment variable.");
     return false;
   }
   try {
-    const response = await axios.get(
+    const response = await axios.get<KarmaResponse>(
       `https://adjutor.lendsqr.com/v2/verification/karma/${identity}`,
       {
         headers: {
-          Authorization: `Bearer ${ADJUTOR_API_KEY}`,
+          Authorization: `Bearer ${envConfig.ADJUTOR_API_KEY}`,
         },
       }
     );
@@ -27,8 +34,11 @@ export async function isUserBlacklisted(identity: string): Promise<boolean> {
     const isBlacklisted = status === "success";
 
     return isBlacklisted;
-  } catch (error: any) {
-    logger.error("Karma check failed:", error.message);
+  } catch (error: unknown) {
+    logger.error(
+      "Karma check failed:",
+      error instanceof Error ? error.message : "Unknown error"
+    );
     return true;
   }
 }

@@ -1,21 +1,24 @@
-import knex from "knex";
+import knex, { Knex } from "knex";
 import logger from "../utils/logger";
-import { NODE_ENV } from "./env";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const config = require("../knexfile");
+import { envConfig } from "./env";
 
-const env = NODE_ENV || "development";
-const db = knex(config[env]);
+// Import knexfile with proper typing
+const knexConfig = require("../knexfile") as Record<string, Knex.Config>;
 
-// Test DB connection
-(async () => {
+const env = envConfig.NODE_ENV || "development";
+const db = knex(knexConfig[env]);
+
+// Database connection function
+export const connectToDatabase = async (): Promise<void> => {
   try {
     await db.raw("SELECT 1");
     logger.info("Database connected ✅");
   } catch (error) {
-    logger.error(`Database connection failed ❌: ${(error as Error).message}`);
-    process.exit(1);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown database error";
+    logger.error(`Database connection failed ❌: ${errorMessage}`);
+    throw new Error(`Database connection failed: ${errorMessage}`);
   }
-})();
+};
 
 export default db;

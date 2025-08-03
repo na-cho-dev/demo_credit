@@ -19,7 +19,13 @@ jobs:
       - uses: pnpm/action-setup@v2
         with:
           version: 8
-      - run: pnpm install
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
       # - name: Copy .env.example to .env
       #   run: cp .env.example .env
+      - run: pnpm install
+      - run: pnpm lint:check
+      - run: pnpm format:check
       - run: pnpm test

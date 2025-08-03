@@ -32,8 +32,10 @@ describe("Wallet Service", () => {
   it("automatically creates a wallet for a new user", async () => {
     const wallet = await walletService.createWalletForUser("mock-user-id");
     expect(wallet).toHaveProperty("id");
-    expect(wallet.user_id).toBe("mock-user-id");
-    expect(wallet.balance).toBe(0);
+    if (wallet !== null) {
+      expect(wallet.user_id).toBe("mock-user-id");
+      expect(wallet.balance).toBe(0);
+    }
   });
 
   //   it("rejects wallet creation for non-existing user (if exposed)", async () => {
@@ -54,8 +56,10 @@ describe("Wallet Service", () => {
     expect(typeof wallet).toBe("object");
     expect(wallet).toHaveProperty("id");
     expect(wallet).toHaveProperty("user_id");
-    expect(wallet.user_id).toBe("mock-user-id");
-    expect(wallet.balance).toBe(100);
+    if (wallet !== null) {
+      expect(wallet.user_id).toBe("mock-user-id");
+      expect(wallet.balance).toBe(100);
+    }
   });
 
   it("retrieves wallet by user ID", async () => {

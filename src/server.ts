@@ -1,9 +1,9 @@
-import "./config/db";
 import * as http from "http";
 import { parse } from "url";
 import { router } from "./routes/index";
 import logger from "./utils/logger";
-import { HOST, KARMA_CHECK, NODE_ENV, PORT } from "./config/env";
+import { connectToDatabase } from "./config/db";
+import { envConfig } from "./config/env";
 
 const server = http.createServer(async (req, res) => {
   const { pathname } = parse(req.url || "", true);
@@ -23,15 +23,33 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, HOST, () => {
-  logger.info("🚀 Server started successfully!", {
-    environment: NODE_ENV,
-    host: HOST,
-    port: PORT,
-    startedAt: new Date().toLocaleString(),
-  });
-  if (KARMA_CHECK === "false")
-    logger.warn("Karma blacklist check is disabled by environment variable.");
-});
+// Start server with database connection
+const startServer = async (): Promise<void> => {
+  try {
+    // Connect to database first
+    await connectToDatabase();
 
+    // Start the server
+    server.listen(envConfig.PORT, envConfig.HOST, () => {
+      logger.info("🚀 Server started successfully!", {
+        environment: envConfig.NODE_ENV,
+        host: envConfig.HOST,
+        port: envConfig.PORT,
+        startedAt: new Date().toLocaleString(),
+      });
+      if (envConfig.KARMA_CHECK === "false") {
+        logger.warn(
+          "Karma blacklist check is disabled by environment variable."
+        );
+      }
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown startup error";
+    logger.error(`Failed to start server: ${errorMessage}`);
+    process.exit(1);
+  }
+};
 
+// Start the server
+void startServer();

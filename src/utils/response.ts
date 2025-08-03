@@ -4,7 +4,7 @@ export const sendResponse = (
   res: ServerResponse,
   statusCode: number,
   success: boolean = true,
-  payload: Record<string, any>
+  payload: Record<string, unknown>
 ) => {
   res.writeHead(statusCode, {
     "Content-Type": "application/json",

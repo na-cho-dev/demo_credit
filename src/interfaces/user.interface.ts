@@ -1,7 +1,7 @@
 export interface UserPayload {
   id: number;
   email: string;
-  name: string;
+  full_name: string;
 }
 
 export interface CreateUserDto {

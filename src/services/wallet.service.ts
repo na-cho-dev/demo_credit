@@ -1,27 +1,30 @@
 import { walletRepository } from "../repositories/wallet.repository";
-import { AppError } from "../errors/AppError";
+import { NotFoundError } from "../errors/AppError";
+import { Wallet } from "../interfaces/wallet.interface";
 
 export class WalletService {
-  async createWalletForUser(userId: string) {
-    const wallet = await walletRepository.create(userId);
+  async createWalletForUser(userId: string): Promise<Wallet | null> {
+    const wallet = (await walletRepository.create(userId)) as Wallet | null;
     return wallet;
   }
 
-  async getWalletByUserId(userId: string) {
-    const wallet = await walletRepository.findByUserId(userId);
-    if (!wallet) throw new AppError("Wallet not found");
+  async getWalletByUserId(userId: string): Promise<Wallet> {
+    const wallet = (await walletRepository.findByUserId(
+      userId
+    )) as Wallet | null;
+    if (!wallet) throw new NotFoundError("Wallet not found");
     return wallet;
   }
 
-  async getWalletById(walletId: string) {
-    const wallet = await walletRepository.findById(walletId);
-    if (!wallet) throw new AppError("Wallet not found");
+  async getWalletById(walletId: string): Promise<Wallet> {
+    const wallet = (await walletRepository.findById(walletId)) as Wallet | null;
+    if (!wallet) throw new NotFoundError("Wallet not found");
     return wallet;
   }
 
-  async getWalletByEmail(email: string) {
-    const wallet = await walletRepository.findByEmail(email);
-    if (!wallet) throw new AppError("Wallet not found for email");
+  async getWalletByEmail(email: string): Promise<Wallet> {
+    const wallet = (await walletRepository.findByEmail(email)) as Wallet | null;
+    if (!wallet) throw new NotFoundError("Wallet not found for email");
     return wallet;
   }
 }

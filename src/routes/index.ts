@@ -41,9 +41,15 @@ export const router = async (req: IncomingMessage, res: ServerResponse) => {
     sendResponse(res, 404, false, {
       error: "Route not found",
     });
-  } catch (err: any) {
-    sendResponse(res, err.statusCode || 500, false, {
-      error: err.message,
-    });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      sendResponse(res, 500, false, {
+        error: err.message,
+      });
+    } else {
+      sendResponse(res, 500, false, {
+        error: "Unknown error",
+      });
+    }
   }
 };

@@ -1,9 +1,9 @@
-import { NODE_ENV } from "../config/env";
+import { envConfig } from "../config/env";
 import * as winston from "winston";
 
-const { combine, timestamp, printf, colorize, json, errors } = winston.format;
+const { combine, timestamp, printf, colorize, errors } = winston.format;
 
-const isDevelopment = NODE_ENV === "development";
+const isDevelopment = envConfig.NODE_ENV === "development";
 
 // Custom log format for development
 const devFormat = printf(({ level, message, timestamp, ...meta }) => {
@@ -50,23 +50,27 @@ const logger = winston.createLogger({
   exitOnError: false,
 });
 
-export const logInfo = (message: string, meta?: any) => {
+export const logInfo = (message: string, meta?: Record<string, unknown>) => {
   logger.info(message, meta);
 };
 
-export const logError = (message: string, error?: Error, meta?: any) => {
+export const logError = (
+  message: string,
+  error?: Error,
+  meta?: Record<string, unknown>
+) => {
   logger.error(message, { error: error?.stack || error, ...meta });
 };
 
-export const logWarn = (message: string, meta?: any) => {
+export const logWarn = (message: string, meta?: Record<string, unknown>) => {
   logger.warn(message, meta);
 };
 
-export const logDebug = (message: string, meta?: any) => {
+export const logDebug = (message: string, meta?: Record<string, unknown>) => {
   logger.debug(message, meta);
 };
 
-export const logHttp = (message: string, meta?: any) => {
+export const logHttp = (message: string, meta?: Record<string, unknown>) => {
   logger.http(message, meta);
 };
 
