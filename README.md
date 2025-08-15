@@ -372,15 +372,6 @@ Deployed at:
 
 ---
 
-## Links
-
-- **GitHub Repo:** [https://github.com/na-cho-dev/demo_credit](https://github.com/na-cho-dev/demo_credit)
-- **GitHub Repo:** [https://democredit-nacho.up.railway.app/](https://democredit-nacho.up.railway.app/)
-- **Design Document:** [Google Docs](https://docs.google.com/document/d/1LVBiNT5SypErJP2t1KxWs1hEbK36KmDzE9X_HCqjRJM/edit?usp=sharing)
-- **Video Review:** [Loom link](https://www.loom.com/share/8170266afd7e46288756d84ac5036bfd?sid=53978e19-0530-4add-a35c-a9dc269d3bad)
-
----
-
 ## Contributing
 
 1. Fork the repository
