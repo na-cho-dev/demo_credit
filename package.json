@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
+    "prebuild": "rm -rf dist",
     "start": "node dist/server.js",
+    "prestart": "pnpm run build",
     "migrate:create": "ts-node ./node_modules/knex/bin/cli.js migrate:make --knexfile src/knexfile.ts",
     "migrate:latest": "ts-node ./node_modules/knex/bin/cli.js migrate:latest --knexfile src/knexfile.ts",
     "migrate:rollback": "ts-node ./node_modules/knex/bin/cli.js migrate:rollback --knexfile src/knexfile.ts",
