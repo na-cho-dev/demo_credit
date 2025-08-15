@@ -1,20 +1,11 @@
 import { UserPayload } from "../interfaces/user.interface";
-import {
-  ConflictError,
-  ForbiddenError,
-  UnauthorizedError,
-} from "../errors/AppError";
+import { ConflictError, UnauthorizedError } from "../errors/AppError";
 import { userRepository } from "../repositories/user.repository";
-import { isUserBlacklisted } from "./karma.service";
 import { walletService } from "./wallet.service";
 import { Wallet } from "../interfaces/wallet.interface";
 
 export class AuthService {
   async register(full_name: string, email: string) {
-    const blacklisted = await isUserBlacklisted(email);
-    if (blacklisted)
-      throw new ForbiddenError("User is blacklisted and cannot be onboarded");
-
     const existing = (await userRepository.findByEmail(
       email
     )) as UserPayload | null;

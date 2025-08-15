@@ -2,7 +2,7 @@
 
 ## Overview
 
-Demo Credit is a mobile lending MVP wallet service built with **NodeJS**, **TypeScript**, **KnexJS**, and **MySQL**. It enables users to register, manage wallets, fund, withdraw, and transfer funds, with blacklist checks via the Lendsqr Adjutor Karma API.
+Demo Credit is a mobile lending MVP wallet service built with **NodeJS**, **TypeScript**, **KnexJS**, and **MySQL**. It enables users to register, manage wallets, fund, withdraw, and transfer funds.
 
 ---
 
@@ -16,8 +16,6 @@ Demo Credit is a mobile lending MVP wallet service built with **NodeJS**, **Type
   - Transfer funds to other users
 - **Transaction Handling**  
   All wallet operations are tracked as transactions.
-- **Blacklist Integration**  
-  Users on the Adjutor Karma blacklist cannot register.
 - **Error Handling**  
   Custom error classes for robust error management.
 - **Database Migrations**  
@@ -91,8 +89,6 @@ DB_PASSWORD=your_mysql_password
 DB_NAME=demo_credit_db
 
 # API keys
-ADJUTOR_API_KEY=your_api_key_here
-KARMA_CHECK=false
 ```
 
 5. Set up the database:
@@ -320,19 +316,6 @@ See [`src/database/migrations/`](src/database/migrations/) for schema definition
 
 ---
 
-## Adjutor Karma Blacklist Integration
-
-Adjutor Karma Blacklist Check Toggle:  
-To accommodate Adjutor API limitations for unverified accounts, the blacklist check can be enabled or disabled in any environment using the `KARMA_CHECK` environment variable.
-
-- When `KARMA_CHECK=false`, the blacklist check is bypassed, allowing user onboarding and testing to proceed even if the Adjutor API would otherwise block registration. This is useful during development or while your Adjutor account is not fully verified.
-- Once your Adjutor account is verified, set `KARMA_CHECK=true` to enforce the real blacklist check in production for compliance.
-
-On registration, the user's email is checked against the Adjutor Karma blacklist using the API key in `.env`.  
-Blacklisted users are rejected with a relevant error when the check
-
----
-
 ## Design Decisions
 
 - **Faux Token Auth:**  
@@ -343,8 +326,6 @@ Blacklisted users are rejected with a relevant error when the check
   Ensures atomicity for wallet transfers.
 - **Custom Errors:**  
   Improves error reporting and handling.
-- **Blacklist Check:**  
-  Ensures compliance with Lendsqr requirements.
 
 ---
 
@@ -387,14 +368,14 @@ A Postman collection is provided to help you test all API endpoints easily.
 ## Deployment
 
 Deployed at:  
-`https://fortune-iheanacho-lendsqr-be-test.up.railway.app`
+`https://democredit-nacho.up.railway.app`
 
 ---
 
 ## Links
 
 - **GitHub Repo:** [https://github.com/na-cho-dev/demo_credit](https://github.com/na-cho-dev/demo_credit)
-- **GitHub Repo:** [https://fortune-iheanacho-lendsqr-be-test.up.railway.app/](https://fortune-iheanacho-lendsqr-be-test.up.railway.app/)
+- **GitHub Repo:** [https://democredit-nacho.up.railway.app/](https://democredit-nacho.up.railway.app/)
 - **Design Document:** [Google Docs](https://docs.google.com/document/d/1LVBiNT5SypErJP2t1KxWs1hEbK36KmDzE9X_HCqjRJM/edit?usp=sharing)
 - **Video Review:** [Loom link](https://www.loom.com/share/8170266afd7e46288756d84ac5036bfd?sid=53978e19-0530-4add-a35c-a9dc269d3bad)
 

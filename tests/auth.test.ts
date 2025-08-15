@@ -34,24 +34,10 @@ jest.mock("../src/services/wallet.service", () => ({
 
 describe("User Registration", () => {
   it("registers a new user with valid data", async () => {
-    jest
-      .spyOn(require("../src/services/karma.service"), "isUserBlacklisted")
-      .mockResolvedValue(false);
-
     const data = await authService.register("Test User", "test@example.com");
     expect(data.user).toHaveProperty("id");
     expect(data.user.email).toBe("test@example.com");
     expect(data.token).toBe("fake-token-mock-user-id");
-  });
-
-  it("rejects registration for blacklisted user", async () => {
-    jest
-      .spyOn(require("../src/services/karma.service"), "isUserBlacklisted")
-      .mockResolvedValue(true);
-
-    await expect(
-      authService.register("Bad User", "bad@example.com")
-    ).rejects.toThrow("User is blacklisted and cannot be onboarded");
   });
 
   it("rejects registration for duplicate email", async () => {
@@ -61,10 +47,6 @@ describe("User Registration", () => {
       full_name: "Existing User",
       email: "test@example.com",
     });
-
-    jest
-      .spyOn(require("../src/services/karma.service"), "isUserBlacklisted")
-      .mockResolvedValue(false);
 
     await expect(
       authService.register("Test User", "test@example.com")

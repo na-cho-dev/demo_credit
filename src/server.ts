@@ -37,11 +37,6 @@ const startServer = async (): Promise<void> => {
         port: envConfig.PORT,
         startedAt: new Date().toLocaleString(),
       });
-      if (envConfig.KARMA_CHECK === "false") {
-        logger.warn(
-          "Karma blacklist check is disabled by environment variable."
-        );
-      }
     });
   } catch (error) {
     const errorMessage =
